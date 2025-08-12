@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>R6 Operator & Loadout Randomizer</title>
+<style>
+body { font-family: Arial, sans-serif; background: #111; color: #fff; margin: 0; padding: 20px; }
+button { background: #ffcc00; border: none; padding: 10px 20px; margin: 5px; font-weight: bold; cursor: pointer; border-radius: 5px; }
+section { background: #222; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+.operator-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 5px; }
+label { display: flex; align-items: center; gap: 5px; font-size: 14px; background: #333; padding: 5px; border-radius: 5px; }
+</style>
+</head>
+<body>
+<h1>R6 Operator & Loadout Randomizer</h1>
+<div>
+  <button id="randomize">Randomize</button>
+</div>
+<section>
+  <h2>Attackers</h2>
+  <div class="operator-list" id="attackersList"></div>
+</section>
+<section>
+  <h2>Defenders</h2>
+  <div class="operator-list" id="defendersList"></div>
+</section>
+<section>
+  <h2>Results</h2>
+  <p id="attackerResult">Attacker: —</p>
+  <p id="defenderResult">Defender: —</p>
+</section>
+<script>
+const operators = {
+  attackers: [
+    {name: 'Ash', primaries:['R4-C','G36C'], secondaries:['M45 MEUSOC'], gadgets:['Breaching Charge','Stun Grenade']},
+    {name: 'Thermite', primaries:['556XI','M1014'], secondaries:['5.7 USG'], gadgets:['Smoke Grenade','Claymore']},
+    {name: 'Sledge', primaries:['L85A2','M590A1'], secondaries:['P226 MK 25'], gadgets:['Frag Grenade','Stun Grenade']}
+  ],
+  defenders: [
+    {name: 'Jäger', primaries:['416-C','M870'], secondaries:['P12'], gadgets:['Barbed Wire','Bulletproof Camera']},
+    {name: 'Bandit', primaries:['MP7','M870'], secondaries:['P12'], gadgets:['Nitro Cell','Barbed Wire']},
+    {name: 'Mira', primaries:['Vector .45','ITA12L'], secondaries:['USP40'], gadgets:['Barbed Wire','Nitro Cell']}
+  ]
+};
+
+function renderOperatorList() {
+  ['attackers','defenders'].forEach(side => {
+    const container = document.getElementById(side+'List');
+    operators[side].forEach(op => {
+      const id = side + '-' + op.name;
+      const label = document.createElement('label');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.id = id;
+      checkbox.checked = true;
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode(op.name));
+      container.appendChild(label);
+    });
+  });
+}
+
+function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function randomize() {
+  const selectedAttackers = operators.attackers.filter(op => document.getElementById('attackers-' + op.name)?.checked);
+  const selectedDefenders = operators.defenders.filter(op => document.getElementById('defenders-' + op.name)?.checked);
+  if (!selectedAttackers.length || !selectedDefenders.length) {
+    alert('Please select at least one operator from each side.');
+    return;
+  }
+  const att = pickRandom(selectedAttackers);
+  const def = pickRandom(selectedDefenders);
+  document.getElementById('attackerResult').textContent = `Attacker: ${att.name} | Primary: ${pickRandom(att.primaries)}, Secondary: ${pickRandom(att.secondaries)}, Gadget: ${pickRandom(att.gadgets)}`;
+  document.getElementById('defenderResult').textContent = `Defender: ${def.name} | Primary: ${pickRandom(def.primaries)}, Secondary: ${pickRandom(def.secondaries)}, Gadget: ${pickRandom(def.gadgets)}`;
+}
+
+document.getElementById('randomize').addEventListener('click', randomize);
+renderOperatorList();
+</script>
+</body>
+</html>
